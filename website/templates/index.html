@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/style.css" />
+    <title>Predictor</title>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="title">Laptop Price Predictor</div>
+      <form action="/" method="POST" id="predictor-form">
+        <div class="form">
+          <div class="inputfield">
+            <label for="ram">Ram (GB)</label>
+            <input type="text" class="input" name="ram" required value="{{ request.form['ram'] if request.form else '' }}" />
+          </div>
+          <div class="inputfield">
+            <label for="weight">Weight (kg)</label>
+            <input type="text" class="input" name="weight" required value="{{ request.form['weight'] if request.form else '' }}" />
+          </div>
+          <div class="inputfield">
+            <label for="company">Company</label>
+            <div class="custom_select">
+              <select name="company" id="company">
+                <option value="" hidden>Select</option>
+                {% for brand in ['acer', 'apple', 'asus', 'dell', 'hp', 'lenovo', 'msi', 'toshiba', 'other'] %}
+                <option value="{{ brand }}" {% if request.form and request.form['company'] == brand %}selected{% endif %}>
+                  {{ 'MSI' if brand == 'msi' else 'HP' if brand == 'hp' else brand.capitalize() }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="inputfield">
+            <label for="typename">Type Name</label>
+            <div class="custom_select">
+              <select name="typename" id="typename">
+                <option value="" hidden>Select</option>
+                {% for type in ['2in1convertible', 'gaming', 'netbook', 'notebook', 'ultrabook', 'workstation'] %}
+                  <option value="{{ type }}" {% if request.form and request.form['typename'] == type %}selected{% endif %}>{{ type.replace('2in1convertible', '2 in 1 Convertible').replace('gaming', 'Gaming').replace('notebook', 'Note Book').replace('ultrabook', 'Ultra Book').replace('workstation', 'Workstation').replace('netbook', 'Net Book') }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="inputfield">
+            <label for="opsys">Operating System</label>
+            <div class="custom_select">
+              <select name="opsys" id="opsys">
+                <option value="" hidden>Select</option>
+                {% for os in ['windows', 'mac', 'linux', 'other'] %}
+                  <option value="{{ os }}" {% if request.form and request.form['opsys'] == os %}selected{% endif %}>{{ os.capitalize() }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="inputfield">
+            <label for="cpuname">CPU</label>
+            <div class="custom_select">
+              <select name="cpuname" id="cpuname">
+                <option value="" hidden>Select</option>
+                {% for cpu in ['intelcorei3', 'intelcorei5', 'intelcorei7', 'amd', 'other'] %}
+                  <option value="{{ cpu }}" {% if request.form and request.form['cpuname'] == cpu %}selected{% endif %}>
+                    {{ cpu.replace('intelcorei3', 'Intel Core i3').replace('intelcorei5', 'Intel Core i5').replace('intelcorei7', 'Intel Core i7').replace('amd', 'AMD').replace('other', 'Other') }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="inputfield">
+            <label for="gpuname">GPU</label>
+            <div class="custom_select">
+              <select name="gpuname" id="gpuname">
+                <option value="" hidden>Select</option>
+                {% for gpu in ['intel', 'amd', 'nvidia'] %}
+                  <option value="{{ gpu }}" {% if request.form and request.form['gpuname'] == gpu %}selected{% endif %}>
+                    {{ 'AMD' if gpu == 'amd' else gpu.capitalize() }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="check">
+            <div>
+              <label for="touchscreen">Touch Screen</label>
+              <input type="checkbox" name="touchscreen" {% if request.form and 'touchscreen' in request.form %}checked{% endif %} />
+            </div>
+            <div>
+              <label for="ips">IPS</label>
+              <input type="checkbox" name="ips" {% if request.form and 'ips' in request.form %}checked{% endif %} />
+            </div>
+          </div>
+          <div class="inputfield">
+            <input type="submit" class="btn" value="Predict Price" />
+          </div>
+        </div>
+      </form>
+      <div class="result">
+        {% if pred != 0 %}
+        <p>Estimated Price : LKR {{pred}}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <script>
+      window.addEventListener("load", function () {
+        // Clear form and result if page is reloaded
+        if (performance.getEntriesByType("navigation")[0].type === "reload") {
+          document.getElementById("predictor-form").reset();
+    
+          // Explicitly reset input fields
+          document.querySelectorAll("#predictor-form select").forEach(select => select.selectedIndex = 0);
+          document.querySelectorAll("#predictor-form input[type=checkbox]").forEach(checkbox => checkbox.checked = false);
+
+          // Clear the specific 'ram' and 'weight' text input fields
+          document.querySelector("input[name='ram']").value = '';
+          document.querySelector("input[name='weight']").value = '';
+
+          document.querySelector(".result").innerHTML = "";
+        }
+      });
+    </script>
+  </body>
+</html>
